@@ -93,7 +93,7 @@ export default function DisputesList() {
                     {dispute.lead}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <Badge status="info">{dispute.dispute_type.replace(/_/g, ' ')}</Badge>
+                    <Badge status="info">{dispute.dispute_type?.replace(/_/g, ' ') || 'Unknown'}</Badge>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     {dispute.raised_by}

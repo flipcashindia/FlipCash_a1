@@ -10,7 +10,26 @@ import { formatCurrency } from '../../lib/utils';
 import { extractErrorMessage } from '../../lib/catalog.utils';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
-// ... (Interface remains the same)
+// 👈 FIX 1: Explicitly define the interface here so TypeScript knows what 'data' looks like
+interface DashboardData {
+  totals?: {
+    categories: number;
+    brands: number;
+    models: number;
+    avg_price: number;
+  };
+  charts?: {
+    models_per_category: any[];
+    model_status: any[];
+    top_searches: any[];
+  };
+  trends?: {
+    new_models_this_month: number;
+    new_models_last_month: number;
+    active_categories: number;
+    active_brands: number;
+  };
+}
 
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
 
@@ -52,7 +71,6 @@ export default function CatalogBoard() {
             </div>
             <div className="ml-4">
               <div className="text-sm font-medium text-gray-500">Categories</div>
-              {/* FIX 1: Add optional chaining and default value */}
               <div className="text-2xl font-bold text-dark">{data.totals?.categories ?? 0}</div>
             </div>
           </div>
@@ -65,7 +83,6 @@ export default function CatalogBoard() {
             </div>
             <div className="ml-4">
               <div className="text-sm font-medium text-gray-500">Brands</div>
-              {/* FIX 2: Add optional chaining and default value */}
               <div className="text-2xl font-bold text-dark">{data.totals?.brands ?? 0}</div>
             </div>
           </div>
@@ -78,7 +95,6 @@ export default function CatalogBoard() {
             </div>
             <div className="ml-4">
               <div className="text-sm font-medium text-gray-500">Models</div>
-              {/* FIX 3: Add optional chaining and default value */}
               <div className="text-2xl font-bold text-dark">{data.totals?.models ?? 0}</div>
             </div>
           </div>
@@ -92,7 +108,6 @@ export default function CatalogBoard() {
             <div className="ml-4">
               <div className="text-sm font-medium text-gray-500">Avg. Price</div>
               <div className="text-2xl font-bold text-dark">
-                {/* FIX 4: Add optional chaining */}
                 {formatCurrency(data.totals?.avg_price ?? 0)}
               </div>
             </div>
@@ -102,7 +117,6 @@ export default function CatalogBoard() {
 
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* FIX 5: Use optional chaining for charts object */}
         {data.charts?.models_per_category && data.charts.models_per_category.length > 0 && (
           <Card>
             <div className="p-6">
@@ -121,7 +135,6 @@ export default function CatalogBoard() {
           </Card>
         )}
 
-        {/* FIX 6: Use optional chaining for charts object */}
         {data.charts?.model_status && data.charts.model_status.length > 0 && (
           <Card>
             <div className="p-6">
@@ -133,12 +146,13 @@ export default function CatalogBoard() {
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
+                    label={({ name, percent }: any) => `${name}: ${(percent * 100).toFixed(0)}%`}                      
                     outerRadius={100}
                     fill="#8884d8"
                     dataKey="value"
                   >
-                    {data.charts.model_status.map((entry, index) => (
+                    {/* 👈 FIX 3: Ignore 'entry' with an underscore and type 'index' */}
+                    {data.charts.model_status.map((_, index: number) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
@@ -151,7 +165,6 @@ export default function CatalogBoard() {
       </div>
 
       {/* Top Searches */}
-      {/* FIX 7: Use optional chaining for charts object */}
       {data.charts?.top_searches && data.charts.top_searches.length > 0 && (
         <Card>
           <div className="p-6">
@@ -177,7 +190,7 @@ export default function CatalogBoard() {
         </Card>
       )}
 
-      {/* Quick Actions (No changes needed here as it doesn't use data) */}
+      {/* Quick Actions */}
       <Card>
         <div className="p-6">
           <h2 className="text-xl font-semibold mb-4">Quick Actions</h2>
@@ -210,7 +223,7 @@ export default function CatalogBoard() {
         </div>
       </Card>
 
-      {/* Trends (if available) - This logic was actually already safe! */}
+      {/* Trends */}
       {data.trends && (
         <Card>
           <div className="p-6">

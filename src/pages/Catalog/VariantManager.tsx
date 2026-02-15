@@ -4,7 +4,7 @@ import { ArrowLeft, Plus, Edit, Trash2, Save, X, AlertCircle } from 'lucide-reac
 import { Card } from '../../components/UI/Card';
 import { Button } from '../../components/UI/Button';
 import { Input } from '../../components/UI/Form';
-import { Badge } from '../../components/UI/Badge';
+// import { Badge } from '../../components/UI/Badge';
 import { Loader } from '../../components/UI/Loader';
 import { ConfirmDialog } from '../../components/Shared/ConfirmDialog';
 import { catalogService } from '../../services/catalog.service';
@@ -70,7 +70,7 @@ export default function VariantManager() {
     
     // Auto-generate SKU
     const autoSKU = generateSKU(
-      model.brand?.name || 'BRAND',
+      model.brand_name || 'BRAND', // Fallback to brand_name 
       model.name,
       storage,
       color
@@ -96,7 +96,7 @@ export default function VariantManager() {
       variant_price: variant.variant_price?.toString() || '',
       sku: variant.sku || '',
       stock_quantity: variant.stock_quantity || 0,
-      is_available: variant.is_available,
+      is_available: variant.is_available ?? false, // 👈 FIX applied
     });
   };
 
@@ -108,7 +108,7 @@ export default function VariantManager() {
     // Auto-regenerate SKU when storage, ram, or color changes
     if ((field === 'storage' || field === 'color') && model) {
       const newSKU = generateSKU(
-        model.brand?.name || 'BRAND',
+        model.brand_name || 'BRAND', // Fallback to brand_name
         model.name,
         field === 'storage' ? value : editingVariant.storage,
         field === 'color' ? value : editingVariant.color
@@ -188,8 +188,9 @@ export default function VariantManager() {
 
   const toggleAvailability = async (variant: DeviceVariant) => {
     try {
-      await catalogService.toggleVariantAvailability(variant.id, !variant.is_available);
-      toast.success(`Variant ${!variant.is_available ? 'enabled' : 'disabled'}`);
+      const currentStatus = variant.is_available ?? false; // 👈 FIX applied
+      await catalogService.toggleVariantAvailability(variant.id, !currentStatus);
+      toast.success(`Variant ${!currentStatus ? 'enabled' : 'disabled'}`);
       loadModelAndVariants();
     } catch (error) {
       toast.error(extractErrorMessage(error));
@@ -308,7 +309,7 @@ export default function VariantManager() {
                   value={editingVariant.variant_price}
                   onChange={(e) => handleChange('variant_price', e.target.value)}
                   placeholder="Leave empty to use base price"
-                  helpText={`Base price: ${formatCurrency(model.base_price)}`}
+                  helpText={`Base price: ${formatCurrency(Number(model.base_price) || 0)}`}
                 />
 
                 <Input
@@ -322,7 +323,7 @@ export default function VariantManager() {
                 <Input
                   label="Stock Quantity"
                   type="number"
-                  value={editingVariant.stock_quantity}
+                  value={editingVariant.stock_quantity.toString()}
                   onChange={(e) => handleChange('stock_quantity', parseInt(e.target.value) || 0)}
                   min={VALIDATION.MIN_STOCK}
                   max={VALIDATION.MAX_STOCK}
@@ -387,7 +388,8 @@ export default function VariantManager() {
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
                     {variants.map((variant) => {
-                      const variantStatus = getVariantStatus(variant.is_available, variant.stock_quantity);
+                      // 👈 FIX applied: Fallbacks provided
+                      const variantStatus = getVariantStatus(variant.is_available ?? false, variant.stock_quantity ?? 0);
                       return (
                         <tr key={variant.id} className="hover:bg-gray-50">
                           <td className="px-6 py-4">
@@ -401,7 +403,8 @@ export default function VariantManager() {
                           <td className="px-6 py-4">
                             <div className="text-sm">
                               <div className="font-medium text-gray-900">
-                                {formatCurrency(variant.effective_price)}
+                                {/* 👈 FIX applied: Fallbacks provided */}
+                                {formatCurrency(variant.effective_price ?? 0)}
                               </div>
                               {variant.variant_price && (
                                 <div className="text-xs text-gray-500">
@@ -411,10 +414,11 @@ export default function VariantManager() {
                             </div>
                           </td>
                           <td className="px-6 py-4">
+                            {/* 👈 FIX applied: Fallbacks provided */}
                             <span className={`text-sm ${
-                              variant.stock_quantity > 0 ? 'text-gray-900' : 'text-red-600 font-medium'
+                              (variant.stock_quantity ?? 0) > 0 ? 'text-gray-900' : 'text-red-600 font-medium'
                             }`}>
-                              {variant.stock_quantity} units
+                              {variant.stock_quantity ?? 0} units
                             </span>
                           </td>
                           <td className="px-6 py-4">
@@ -434,8 +438,9 @@ export default function VariantManager() {
                               </button>
                               <button
                                 onClick={() => toggleAvailability(variant)}
-                                className={`${variant.is_available ? 'text-amber-600 hover:text-amber-700' : 'text-green-600 hover:text-green-700'}`}
-                                title={variant.is_available ? 'Mark Unavailable' : 'Mark Available'}
+                                // 👈 FIX applied: Fallbacks provided
+                                className={`${(variant.is_available ?? false) ? 'text-amber-600 hover:text-amber-700' : 'text-green-600 hover:text-green-700'}`}
+                                title={(variant.is_available ?? false) ? 'Mark Unavailable' : 'Mark Available'}
                                 disabled={!!editingVariant}
                               >
                                 <AlertCircle className="w-4 h-4" />
@@ -466,7 +471,7 @@ export default function VariantManager() {
             <h3 className="font-semibold text-blue-900 mb-2">💡 Tips for Managing Variants</h3>
             <ul className="list-disc list-inside space-y-1 text-sm text-blue-800">
               <li>Create variants for all available combinations of storage, RAM, and color</li>
-              <li>Leave variant price empty to use the model's base price ({formatCurrency(model.base_price)})</li>
+              <li>Leave variant price empty to use the model's base price ({formatCurrency(Number(model.base_price) || 0)})</li>
               <li>Set custom pricing for premium configurations (e.g., higher storage)</li>
               <li>SKU is auto-generated but can be customized for inventory tracking</li>
               <li>Mark variants as unavailable when out of stock instead of deleting them</li>

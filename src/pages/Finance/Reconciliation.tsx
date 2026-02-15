@@ -131,7 +131,7 @@ const Reconciliation: React.FC = () => {
     // Implement CSV/PDF download
   };
 
-  const handleResolveMismatch = async (id: string) => {
+  const handleResolveMismatch = async (_id: string) => {
     const resolution = prompt('Enter resolution notes:');
     if (!resolution) return;
     

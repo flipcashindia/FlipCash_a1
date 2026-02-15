@@ -74,7 +74,7 @@ api.interceptors.response.use(
     if (error.response && error.response.status === 401) {
       // This is what's causing your "automatic logout"
       // We log out the user and clean the store.
-      useAuthStore.getState().logout();
+      useAuthStore.getState().clearAuth();
       
       // Optional: force a page reload to the login screen
       // window.location.href = '/login';

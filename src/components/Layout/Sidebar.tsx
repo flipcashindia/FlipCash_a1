@@ -1,4 +1,4 @@
-// components/Layout/Sidebar.tsx - UPDATED WITH COMPLETE CATALOG & FINANCE MENU
+// src/components/Layout/Sidebar.tsx
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
@@ -17,29 +17,48 @@ import {
   LogOut,
   Menu,
   X,
-  // Catalog & Sub-icons
   Grid3x3,
   Tag,
   Smartphone,
   ListChecks,
   Upload,
   TrendingUp,
-  Clock, // Added for pending requests
-  FileText // Added for reconciliation
+  Clock,
+  FileText,
+  CreditCard 
 } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { usePermissions } from '../../hooks/usePermissions';
 import { getInitials } from '../../lib/utils';
 import { ROUTES } from '../../config/constants';
 
-export default function Sidebar() {
+interface SubMenuItem {
+  path: string;
+  label: string;
+  icon?: React.ElementType; 
+}
+
+interface MenuItem {
+  path: string;
+  icon: React.ElementType;
+  label: string;
+  show: boolean;
+  subItems?: SubMenuItem[];
+}
+
+// 👈 FIXED: Interface added and exported
+export interface SidebarProps {
+  isOpen: boolean;
+  setIsOpen: (val: boolean) => void;
+}
+
+export default function Sidebar({ isOpen }: SidebarProps) {
   const location = useLocation();
   const { user, clearAuth } = useAuthStore();
   const { canManageFinance, canManageOperations, canManageUsers, isAdmin } = usePermissions();
   
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
-  // State for expanded groups
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>(() => {
     const path = location.pathname;
     const initialState: Record<string, boolean> = {};
@@ -61,8 +80,7 @@ export default function Sidebar() {
     setIsMobileOpen(false);
   }, [location.pathname]);
 
-  // Define menu items configuration
-  const menuItems = [
+  const menuItems: MenuItem[] = [
     { 
       path: ROUTES.DASHBOARD, 
       icon: LayoutDashboard, 
@@ -120,6 +138,7 @@ export default function Sidebar() {
         { path: '/finance/transactions', label: 'Transactions', icon: ListChecks },
         { path: '/finance/wallet', label: 'Wallet Management', icon: Wallet },
         { path: '/finance/reconciliation', label: 'Reconciliation', icon: FileText },
+        { path: '/finance/partner-payments', label: 'Partner Payments', icon: CreditCard },
       ]
     },
     { 
@@ -162,7 +181,6 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* Mobile Menu Toggle Button */}
       <button
         onClick={() => setIsMobileOpen(!isMobileOpen)}
         className="fixed top-4 left-4 z-50 p-2 bg-dark text-white rounded-lg md:hidden"
@@ -170,7 +188,6 @@ export default function Sidebar() {
         {isMobileOpen ? <X size={24} /> : <Menu size={24} />}
       </button>
 
-      {/* Overlay for mobile */}
       {isMobileOpen && (
         <div 
           className="fixed inset-0 bg-black/50 z-40 md:hidden"
@@ -178,14 +195,13 @@ export default function Sidebar() {
         />
       )}
 
-      {/* Sidebar Container */}
       <aside 
         className={`
           fixed left-0 top-0 h-screen w-64 bg-[#1a1c23] text-white flex flex-col border-r border-gray-800 z-50 transition-transform duration-300 ease-in-out
           ${isMobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+          ${!isOpen ? 'md:hidden' : ''} 
         `}
       >
-        {/* Header */}
         <div className="p-6 flex-shrink-0 border-b border-gray-800">
           <Link to="/dashboard" className="flex items-center gap-3">
             <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center shadow-lg shadow-primary/20">
@@ -195,7 +211,6 @@ export default function Sidebar() {
           </Link>
         </div>
 
-        {/* Scrollable Navigation Area */}
         <div className="flex-1 overflow-y-auto px-3 py-4 scrollbar-thin scrollbar-thumb-gray-700">
           <nav className="space-y-1">
             {menuItems.map((item) => {
@@ -231,7 +246,6 @@ export default function Sidebar() {
                         )}
                       </button>
 
-                      {/* Sub Items Dropdown */}
                       <div className={`overflow-hidden transition-all duration-300 ease-in-out ${
                         isExpanded ? 'max-h-[500px] opacity-100 mt-1' : 'max-h-0 opacity-0'
                       }`}>
@@ -278,7 +292,6 @@ export default function Sidebar() {
           </nav>
         </div>
 
-        {/* User Footer Section */}
         <div className="p-4 border-t border-gray-800 bg-[#15171e]">
           <div className="flex items-center gap-3 mb-4 px-1">
             <div className="w-9 h-9 rounded-full bg-gray-700 ring-2 ring-gray-800 flex items-center justify-center flex-shrink-0">

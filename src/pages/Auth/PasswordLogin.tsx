@@ -24,7 +24,7 @@ export default function PasswordLogin() {
     try {
       const response = await authService.passwordLogin(credentials);
       
-      setTokens(response.access, response.refresh);
+      setTokens(response.tokens.access, response.tokens.refresh);
       setUser(response.user);
       
       toast.success('Login successful');

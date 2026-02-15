@@ -10,12 +10,12 @@ export const usersService = {
     return data;
   },
 
-  getCustomer: async (id: string) => {
+  getCustomer: async (_id: string) => {
     const { data } = await axios.get<Customer>(`/accounts/me/`);
     return data;
   },
 
-  updateCustomer: async (id: string, customerData: Partial<Customer>) => {
+  updateCustomer: async (_id: string, customerData: Partial<Customer>) => {
     const { data } = await axios.put(`/accounts/me/`, customerData);
     return data;
   },

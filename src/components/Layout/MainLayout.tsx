@@ -1,16 +1,23 @@
-// components/Layout/MainLayout.tsx
-import { Outlet } from 'react-router-dom';
+import { useState } from 'react';
 import Sidebar from './Sidebar';
 import Header from './Header';
 
-export default function MainLayout() {
+interface MainLayoutProps {
+  children: React.ReactNode;
+}
+
+export default function MainLayout({ children }: MainLayoutProps) {
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Sidebar />
-      <Header />
-      <main className="ml-64 mt-16 p-6">
-        <Outlet />
-      </main>
+    <div className="flex h-screen bg-gray-light">
+      <Sidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <Header toggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
+        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-light p-6">
+          {children}
+        </main>
+      </div>
     </div>
   );
 }

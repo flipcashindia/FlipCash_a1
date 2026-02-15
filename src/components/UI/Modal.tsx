@@ -9,9 +9,10 @@ interface ModalProps {
   title?: string;
   children: ReactNode;
   size?: 'sm' | 'md' | 'lg' | 'xl';
+  footer?: ReactNode; // 👈 1. Added footer to the interface
 }
 
-export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalProps) {
+export function Modal({ isOpen, onClose, title, children, size = 'md', footer }: ModalProps) { // 👈 2. Destructured footer here
   const sizeClasses = {
     sm: 'max-w-md',
     md: 'max-w-lg',
@@ -64,7 +65,16 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
                     <X className="w-5 h-5" />
                   </button>
                 </div>
+                
+                {/* Main Content */}
                 <div>{children}</div>
+
+                {/* 👈 3. Conditionally render the footer here */}
+                {footer && (
+                  <div className="mt-6 pt-4 border-t border-gray-200 flex justify-end gap-3">
+                    {footer}
+                  </div>
+                )}
               </Dialog.Panel>
             </Transition.Child>
           </div>

@@ -53,6 +53,8 @@ import PayoutsList from '../pages/Finance/PayoutsList';
 import TransactionsList from '../pages/Finance/Transactions';
 import WalletManagement from '../pages/Finance/WalletManagement';
 import Reconciliation from '../pages/Finance/Reconciliation';
+import PartnerPayments from '../pages/Finance/PartnerPayments';
+
 
 // Operations Pages
 import DisputesList from '../pages/Operations/DisputesList';
@@ -81,7 +83,7 @@ export default function AppRoutes() {
       </Route>
 
       {/* Protected Routes */}
-      <Route element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
+      <Route element={<ProtectedRoute><MainLayout children={undefined} /></ProtectedRoute>}>
         <Route path="/dashboard" element={<Dashboard />} />
 
         {/* Catalog Routes - COMPLETE */}
@@ -139,6 +141,7 @@ export default function AppRoutes() {
         <Route path="/finance/transactions" element={<TransactionsList />} />
         <Route path="/finance/wallet" element={<WalletManagement />} />
         <Route path="/finance/reconciliation" element={<Reconciliation />} />
+        <Route path="/finance/partner-payments" element={<PartnerPayments />} />
 
         {/* Operations Routes */}
         <Route path="/operations/disputes" element={<DisputesList />} />

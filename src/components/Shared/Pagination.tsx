@@ -20,7 +20,7 @@ export function Pagination({
   const endItem = Math.min(currentPage * itemsPerPage, totalItems);
 
   const getPageNumbers = () => {
-    const pages = [];
+    const pages: (number | string)[] = [];
     const maxVisible = 5;
 
     if (totalPages <= maxVisible) {

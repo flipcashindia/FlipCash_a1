@@ -16,8 +16,10 @@ export interface User {
 }
 
 export interface AuthResponse {
-  access: string;
-  refresh: string;
+  tokens: {
+    access: string;
+    refresh: string;
+  };
   user: User;
 }
 
@@ -40,16 +42,104 @@ export interface PasswordLogin {
 // ============================================================================
 // CATALOG TYPES
 // ============================================================================
+// export interface DeviceCategory {
+//   id: string;
+//   name: string;
+//   slug: string;
+//   description?: string;
+//   icon?: string;
+//   is_active: boolean;
+//   is_featured: boolean;
+//   sort_order: number;
+//   models_count?: number;
+//   created_at: string;
+//   updated_at: string;
+//   icon_url?: string; // Add this
+// }
+
+// export interface DeviceBrand {
+//   id: string;
+//   name: string;
+//   slug: string;
+//   logo?: string;
+//   is_active: boolean;
+//   is_featured: boolean;
+//   sort_order: number;
+//   models_count?: number;
+//   created_at: string;
+//   updated_at: string;
+// }
+
+// export interface DeviceModel {
+//   id: string;
+//   category: string;
+//   category_name?: string;
+//   brand: string;
+//   brand_name?: string;
+//   name: string;
+//   slug: string;
+//   base_price: string;
+//   image?: string;
+//   thumbnail?: string; // Missing property
+//   model_number?: string; // Missing property
+//   brand_logo?: string; // Missing property
+//   variants?: any[]; // Missing property
+//   storage_options?: string[]; // Missing property
+//   ram_options?: string[]; // Missing property
+//   color_options?: string[]; // Missing property
+//   specifications?: Record<string, any>;
+//   is_active: boolean;
+//   is_featured: boolean;
+//   sort_order: number;
+//   created_at: string;
+//   updated_at: string;
+//   launch_year?: number;      // Add this
+//   description?: string;      // Add this
+//   meta_description?: string; // Add this
+//   images?: any[];
+// }
+
+// export interface DeviceAttribute {
+//   id: string;
+//   name: string;
+//   attribute_type: 'text' | 'number' | 'select' | 'multiselect' | 'boolean';
+//   options?: string[];
+//   is_required: boolean;
+//   is_active: boolean;
+//   sort_order: number;
+// }
+
+// export interface DeviceVariant {
+//   id: string;
+//   device_model: string;
+//   storage?: string;
+//   ram?: string;
+//   color?: string;
+//   sku?: string;
+//   price_adjustment: number;
+//   final_price?: number;
+//   variant_price?: number; // Missing property
+//   effective_price?: number; // Missing property
+//   stock_quantity?: number; // Missing property
+//   is_available?: boolean; // Missing property
+//   is_active: boolean;
+//   created_at: string;
+//   updated_at: string;
+// }
+
+
+
 export interface DeviceCategory {
   id: string;
   name: string;
   slug: string;
   description?: string;
   icon?: string;
+  icon_url?: string; // Fixed
   is_active: boolean;
   is_featured: boolean;
   sort_order: number;
-  models_count?: number;
+  models_count?: number; // Fixed
   created_at: string;
   updated_at: string;
 }
@@ -58,44 +148,51 @@ export interface DeviceBrand {
   id: string;
   name: string;
   slug: string;
-  logo?: string;
+  logo?: string; // Fixed
+  logo_url?: string; // Fixed
+  description?: string;
+  country_of_origin?: string; // Fixed
+  website?: string; // Fixed
   is_active: boolean;
   is_featured: boolean;
   sort_order: number;
-  models_count?: number;
+  models_count?: number; // Fixed
   created_at: string;
   updated_at: string;
 }
 
 export interface DeviceModel {
   id: string;
-  category: string;
-  category_name?: string;
-  brand: string;
+  category: any; // Fixed: Allows nested object from backend
+  brand: any;    // Fixed: Allows nested object from backend
+  category_id?: string;
+  brand_id?: string;
   brand_name?: string;
+  brand_logo?: string;
+  category_name?: string;
   name: string;
+  model_number?: string; // Fixed
   slug: string;
+  launch_year?: number; // Fixed
   base_price: string;
   image?: string;
+  thumbnail?: string; // Fixed
+  primary_image?: any;
+  images?: any[]; // Fixed
+  variants?: any[];
+  storage_options?: string[];
+  ram_options?: string[];
+  color_options?: string[];
   specifications?: Record<string, any>;
+  description?: string; // Fixed
+  meta_description?: string; // Fixed
   is_active: boolean;
   is_featured: boolean;
-  sort_order: number;
+  sort_order?: number;
   created_at: string;
   updated_at: string;
 }
 
-export interface DeviceAttribute {
-  id: string;
-  name: string;
-  attribute_type: 'text' | 'number' | 'select' | 'multiselect' | 'boolean';
-  options?: string[];
-  is_required: boolean;
-  is_active: boolean;
-  sort_order: number;
-}
-
-// Find and update the DeviceVariant interface:
 export interface DeviceVariant {
   id: string;
   device_model: string;
@@ -103,12 +200,40 @@ export interface DeviceVariant {
   ram?: string;
   color?: string;
   sku?: string;
-  price_adjustment: number;  // ✅ Changed from string to number
+  price_adjustment: number;
   final_price?: number;
+  variant_price?: number; // Fixed
+  effective_price?: number; // Fixed
+  stock_quantity?: number; // Fixed
+  is_available?: boolean; // Fixed
   is_active: boolean;
   created_at: string;
   updated_at: string;
 }
+
+export interface DeviceAttribute {
+  id: string;
+  name: string;
+  attribute_type: 'cosmetic' | 'functional' | 'accessory' | 'specification' | 'warranty' | 'legal';
+  device_category: string;
+  category_name?: string; // Fixed
+  question_text?: string;
+  options?: string[];
+  price_impact?: any;
+  bucket?: string;
+  help_text?: string;
+  placeholder?: string;
+  is_required: boolean;
+  is_boolean: boolean;
+  is_active: boolean;
+  display_order: number;
+  created_at?: string;
+  updated_at?: string;
+}
+
+
+
+
 
 // ============================================================================
 // LEAD TYPES
@@ -385,10 +510,14 @@ export interface Wallet {
 // ============================================================================
 export interface Dispute {
   id: string;
-  lead: string;
-  raised_by: string;
-  dispute_type: string;
+  dispute_number?: string;
+  lead: any; // Or strictly type it to { id: string; lead_number: string }
+  raised_by: any; // Or strictly type it to { name: string; role: string }
+  dispute_type?: string;
+  type?: string;
+  category?: string;
   description: string;
+  priority?: string;
   status: string;
   resolution?: string;
   resolved_at?: string;
@@ -396,6 +525,7 @@ export interface Dispute {
   created_at: string;
   updated_at: string;
 }
+
 
 export interface SupportTicket {
   id: string;
@@ -412,19 +542,28 @@ export interface SupportTicket {
   updated_at: string;
 }
 
+export interface PopularSearch {
+  id: string;
+  search_term: string;
+  search_count: number;
+  last_searched_at: string;
+}
+
 // ============================================================================
 // COMMUNICATIONS TYPES
 // ============================================================================
 export interface Notification {
   id: string;
   recipient: string;
-  notification_type: string;
+  type: string; 
   title: string;
-  body: string;
+  message: string; 
+  is_sent?: boolean;
   status: string;
   sent_at?: string;
   read_at?: string;
   created_at: string;
+  notification_type?: string; // Add this
 }
 
 export interface FAQ {
@@ -440,13 +579,21 @@ export interface Banner {
   id: string;
   title: string;
   description?: string;
-  image: string;
-  link_url?: string;
-  target_audience: string;
-  is_active: boolean;
+  image_url?: string;
+  banner_type?: string;
+  position?: string;
+  action_url?: string;
+  action_text?: string;
   start_date?: string;
   end_date?: string;
+  target_user_roles?: string[];
+  view_count?: number;
+  click_count?: number;
+  is_active: boolean;
   sort_order: number;
+  link_url?: string;         // Add this
+  target_audience?: string;  // Add this
+  image?: string;
 }
 
 // ============================================================================

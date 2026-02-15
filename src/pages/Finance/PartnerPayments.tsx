@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { 
   CreditCard, Download, RefreshCw, Eye, CheckCircle, Clock,
-  XCircle, AlertCircle, DollarSign, TrendingUp, Building, Calendar
+  XCircle, DollarSign, Building, Calendar
 } from 'lucide-react';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
@@ -59,12 +59,12 @@ interface PartnerPayment {
   paid_at?: string;
 }
 
-interface PaymentsResponse {
-  count: number;
-  next: string | null;
-  previous: string | null;
-  results: PartnerPayment[];
-}
+// interface PaymentsResponse {
+//   count: number;
+//   next: string | null;
+//   previous: string | null;
+//   results: PartnerPayment[];
+// }
 
 // ==================== UTILS ====================
 const formatCurrency = (amount: string | number): string => {

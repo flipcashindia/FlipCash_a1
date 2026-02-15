@@ -1,11 +1,11 @@
 // pages/Finance/WalletManagement.tsx - COMPLETE ADMIN VERSION
 import React, { useState } from 'react';
 import { 
-  Wallet, Plus, Minus, Search, RefreshCw, Eye, Users, 
+  Wallet, Plus, Minus, Search, RefreshCw, Users, 
   Building, TrendingUp, TrendingDown, DollarSign
 } from 'lucide-react';
 import {
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
+  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
 } from 'recharts';
 import axios from 'axios';
 import toast from 'react-hot-toast';

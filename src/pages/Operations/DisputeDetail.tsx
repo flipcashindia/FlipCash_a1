@@ -82,7 +82,7 @@ export default function DisputeDetail() {
             <div className="space-y-4">
               <div>
                 <p className="text-sm text-gray-500">Type</p>
-                <Badge status="info">{dispute.dispute_type.replace(/_/g, ' ')}</Badge>
+                <Badge status="info">{dispute.dispute_type?.replace(/_/g, ' ') || 'General'}</Badge>
               </div>
               <div>
                 <p className="text-sm text-gray-500">Description</p>

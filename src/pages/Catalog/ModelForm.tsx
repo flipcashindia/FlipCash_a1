@@ -250,7 +250,7 @@ export default function ModelForm() {
     category: '',
     brand: '',
     launch_year: new Date().getFullYear(),
-    base_price: DEFAULTS.BASE_PRICE,
+    base_price: String(DEFAULTS.BASE_PRICE), // 👈 FIXED: Cast default to string
     storage_options: [],
     ram_options: [],
     color_options: [],
@@ -312,7 +312,8 @@ export default function ModelForm() {
     }
   };
 
-  const filterBrandsByCategory = (categoryId: string) => {
+  // 👈 FIXED: Prefix unused parameter with underscore
+  const filterBrandsByCategory = (_categoryId: string) => { 
     setBrands(allBrands);
   };
 
@@ -363,7 +364,9 @@ export default function ModelForm() {
       return false;
     }
     
-    if (model.base_price! < VALIDATION.MIN_PRICE || model.base_price! > VALIDATION.MAX_PRICE) {
+    // 👈 FIXED: Parse strings to numbers for validation comparison
+    const priceNum = Number(model.base_price);
+    if (priceNum < VALIDATION.MIN_PRICE || priceNum > VALIDATION.MAX_PRICE) {
       toast.error(`Price must be between ${formatCurrency(VALIDATION.MIN_PRICE)} and ${formatCurrency(VALIDATION.MAX_PRICE)}`);
       return false;
     }

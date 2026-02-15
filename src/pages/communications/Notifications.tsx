@@ -7,8 +7,8 @@ import { Input } from '../../components/UI/Input';
 import { Select } from '../../components/UI/Select';
 import { Badge } from '../../components/UI/Badge';
 import { Loader } from '../../components/UI/Loader';
-import { commsService, type Notification } from '../../services/comms.service';
-import { formatDateTime } from '../../lib/utils';
+import { type Notification } from '../../types';
+import { commsService } from '../../services/comms.service';import { formatDateTime } from '../../lib/utils';
 import toast from 'react-hot-toast';
 
 export default function Notifications() {

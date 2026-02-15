@@ -9,10 +9,12 @@ function cn(...classes: (string | boolean | undefined)[]) {
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: string;
+  helpText?: string;
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ label, name, error, className, ...props }, ref) => {
+  // 👈 FIX: Destructure helpText here so it doesn't leak into ...props
+  ({ label, name, error, helpText, className, ...props }, ref) => {
     return (
       <div className="w-full">
         {label && (
@@ -32,6 +34,12 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           )}
           {...props}
         />
+        
+        {/* 👈 FIX: Render the helpText below the input (hide if there's an error) */}
+        {helpText && !error && (
+          <p className="mt-1 text-sm text-gray-500">{helpText}</p>
+        )}
+        
         {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
       </div>
     );

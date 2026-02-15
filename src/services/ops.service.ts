@@ -1,6 +1,5 @@
 import axios from '../lib/axios';
-import { type Dispute, type Ticket, type PaginatedResponse, type FilterOptions } from '../types';
-
+import { type Dispute, type SupportTicket as Ticket, type PaginatedResponse, type FilterOptions } from '../types';
 export const opsService = {
   // Disputes
   getDisputes: async (filters?: FilterOptions) => {
