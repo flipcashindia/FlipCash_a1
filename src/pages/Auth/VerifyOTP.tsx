@@ -1,7 +1,7 @@
 // pages/auth/VerifyOTP.tsx
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { ShieldCheck } from 'lucide-react';
+import { ShieldCheck, AlertTriangle } from 'lucide-react';
 import { Button } from '../../components/UI/Button';
 import { Input } from '../../components/UI/Input';
 import { authService } from '../../services/auth.service';
@@ -14,12 +14,14 @@ export default function VerifyOTP() {
   const { setUser, setTokens } = useAuthStore();
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
+  const [severeWarning, setSevereWarning] = useState('');
 
   const phone = location.state?.phone || '';
 
   const handleVerifyOTP = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setSevereWarning(''); // Clear previous warnings
 
     try {
       const response = await authService.verifyOTP({ 
@@ -34,7 +36,22 @@ export default function VerifyOTP() {
       toast.success('Login successful');
       navigate('/dashboard');
     } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Invalid OTP');
+      // Improved error extraction to catch Django/DRF standard formats
+      const errorData = error.response?.data;
+      const errorMessage = 
+        errorData?.error || 
+        errorData?.non_field_errors?.[0] || 
+        errorData?.detail || 
+        errorData?.message || 
+        'Invalid OTP';
+      
+      // Check if it's our cyber crime warning or access denied
+      if (errorMessage.includes('ACCOUNT LOCKED') || errorMessage.includes('SUSPICIOUS ACTIVITY')) {
+        setSevereWarning(errorMessage);
+        toast.error('Account Locked', { duration: 5000 });
+      } else {
+        toast.error(errorMessage);
+      }
     } finally {
       setLoading(false);
     }
@@ -52,6 +69,16 @@ export default function VerifyOTP() {
             Enter the OTP sent to {phone}
           </p>
         </div>
+
+        {/* Display Severe Warning prominently if triggered */}
+        {severeWarning && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-500 rounded-md flex items-start gap-3">
+            <AlertTriangle className="text-red-600 shrink-0 w-6 h-6 mt-0.5" />
+            <p className="text-sm text-red-800 font-medium leading-relaxed">
+              {severeWarning}
+            </p>
+          </div>
+        )}
 
         <form onSubmit={handleVerifyOTP} className="space-y-6">
           <Input

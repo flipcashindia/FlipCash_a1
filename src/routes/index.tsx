@@ -83,8 +83,7 @@ export default function AppRoutes() {
       </Route>
 
       {/* Protected Routes */}
-      <Route element={<ProtectedRoute><MainLayout children={undefined} /></ProtectedRoute>}>
-        <Route path="/dashboard" element={<Dashboard />} />
+      <Route element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>        <Route path="/dashboard" element={<Dashboard />} />
 
         {/* Catalog Routes - COMPLETE */}
         <Route path="/catalog" element={<CatalogBoard />} />

@@ -35,7 +35,7 @@ export interface OTPVerification {
 }
 
 export interface PasswordLogin {
-  username: string;
+  phone: string; // Changed from username
   password: string;
 }
 

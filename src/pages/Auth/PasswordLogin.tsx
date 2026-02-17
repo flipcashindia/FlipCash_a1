@@ -1,7 +1,7 @@
 // pages/auth/PasswordLogin.tsx
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Lock } from 'lucide-react';
+import { Lock, AlertTriangle } from 'lucide-react';
 import { Button } from '../../components/UI/Button';
 import { Input } from '../../components/UI/Input';
 import { authService } from '../../services/auth.service';
@@ -12,14 +12,16 @@ export default function PasswordLogin() {
   const navigate = useNavigate();
   const { setUser, setTokens } = useAuthStore();
   const [credentials, setCredentials] = useState({
-    username: '',
+    phone: '', // Changed from username
     password: '',
   });
   const [loading, setLoading] = useState(false);
+  const [severeWarning, setSevereWarning] = useState('');
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setSevereWarning(''); // Clear previous warnings
 
     try {
       const response = await authService.passwordLogin(credentials);
@@ -30,7 +32,18 @@ export default function PasswordLogin() {
       toast.success('Login successful');
       navigate('/dashboard');
     } catch (error: any) {
-      toast.error(error.response?.data?.detail || 'Invalid credentials');
+      // Extract the error message
+      const errorData = error.response?.data;
+      // Django serializers usually return non_field_errors as an array
+      const errorMessage = errorData?.non_field_errors?.[0] || errorData?.detail || 'Invalid credentials';
+      
+      // Check if it's our cyber crime warning
+      if (errorMessage.includes('ACCOUNT LOCKED DUE TO SUSPICIOUS ACTIVITY')) {
+        setSevereWarning(errorMessage);
+        toast.error('Account Locked', { duration: 5000 });
+      } else {
+        toast.error(errorMessage);
+      }
     } finally {
       setLoading(false);
     }
@@ -47,13 +60,23 @@ export default function PasswordLogin() {
           <p className="text-gray-600 mt-2">Sign in with your credentials</p>
         </div>
 
+        {/* Display Severe Warning prominently if triggered */}
+        {severeWarning && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-500 rounded-md flex items-start gap-3">
+            <AlertTriangle className="text-red-600 shrink-0 w-6 h-6 mt-0.5" />
+            <p className="text-sm text-red-800 font-medium leading-relaxed">
+              {severeWarning}
+            </p>
+          </div>
+        )}
+
         <form onSubmit={handleLogin} className="space-y-6">
           <Input
-            label="Username"
-            type="text"
-            placeholder="admin"
-            value={credentials.username}
-            onChange={(e) => setCredentials({ ...credentials, username: e.target.value })}
+            label="Phone Number"
+            type="tel"
+            placeholder="9876543210"
+            value={credentials.phone}
+            onChange={(e) => setCredentials({ ...credentials, phone: e.target.value })}
             required
           />
 
