@@ -25,6 +25,7 @@ export default function PasswordLogin() {
 
     try {
       const response = await authService.passwordLogin(credentials);
+      console.log(response);
       
       setTokens(response.tokens.access, response.tokens.refresh);
       setUser(response.user);
