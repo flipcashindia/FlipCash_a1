@@ -44,6 +44,8 @@ export default function CatalogBoard() {
   const loadDashboard = async () => {
     try {
       const result = await analyticsService.getSummary();
+      console.log(result);
+      
       setData(result as any);
     } catch (error) {
       toast.error(extractErrorMessage(error));

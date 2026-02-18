@@ -34,6 +34,7 @@ export default function BrandList() {
   const loadBrands = async () => {
     try {
       const data = await catalogService.getBrands(filters);
+      console.log(data);
       setBrands(data.results);
       setTotal(data.count);
     } catch (error) {

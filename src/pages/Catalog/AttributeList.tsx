@@ -39,6 +39,7 @@ export default function AttributeList() {
   const loadCategories = async () => {
     try {
       const data = await catalogService.getCategories({ page_size: 999, is_active: true });
+      console.log(data);
       setCategories(data.results);
     } catch (error) {
       toast.error('Failed to load categories');
@@ -48,6 +49,7 @@ export default function AttributeList() {
   const loadAttributes = async () => {
     try {
       const data = await catalogService.getAttributes(filters);
+      console.log(data);
       setAttributes(data.results);
       setTotal(data.count);
     } catch (error) {

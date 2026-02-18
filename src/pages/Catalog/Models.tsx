@@ -42,6 +42,7 @@ export default function ModelList() {
   const loadCategories = async () => {
     try {
       const data = await catalogService.getCategories({ page_size: 999, is_active: true });
+      console.log(data);
       setCategories(data.results);
     } catch (error) {
       toast.error('Failed to load categories');
@@ -51,6 +52,7 @@ export default function ModelList() {
   const loadBrands = async () => {
     try {
       const data = await catalogService.getBrands({ page_size: 999, is_active: true });
+      console.log(data);
       setBrands(data.results);
     } catch (error) {
       toast.error('Failed to load brands');
@@ -60,6 +62,7 @@ export default function ModelList() {
   const loadModels = async () => {
     try {
       const data = await catalogService.getModels(filters);
+      console.log(data);
       setModels(data.results);
       setTotal(data.count);
     } catch (error) {

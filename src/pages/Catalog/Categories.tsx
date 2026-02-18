@@ -24,6 +24,8 @@ export default function CategoryList() {
     setLoading(true);
     try {
       const data = await catalogService.getCategories(filters);
+      console.log(data);
+      
       setCategories(data.results);
       setTotal(data.count);
     } catch (error) {

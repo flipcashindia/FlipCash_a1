@@ -34,6 +34,8 @@ export default function CategoryList() {
   const loadCategories = async () => {
     try {
       const data = await catalogService.getCategories(filters);
+      console.log(data);
+      
       setCategories(data.results);
       setTotal(data.count);
     } catch (error) {
