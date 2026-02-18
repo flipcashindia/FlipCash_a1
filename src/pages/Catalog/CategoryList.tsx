@@ -34,10 +34,17 @@ export default function CategoryList() {
   const loadCategories = async () => {
     try {
       const data = await catalogService.getCategories(filters);
-      console.log(data);
+      console.log('API Response:', data);
       
-      setCategories(data.results);
-      setTotal(data.count);
+      // Safely handle both array responses and paginated object responses
+      if (Array.isArray(data)) {
+        setCategories(data);
+        setTotal(data.length);
+      } else {
+        // Fallback to empty array/0 if results/count are missing
+        setCategories(data.results || []); 
+        setTotal(data.count || 0);
+      }
     } catch (error) {
       toast.error(extractErrorMessage(error));
     } finally {
