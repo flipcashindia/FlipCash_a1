@@ -43,10 +43,32 @@ export default function CatalogBoard() {
 
   const loadDashboard = async () => {
     try {
-      const result = await analyticsService.getSummary();
-      console.log(result);
+      // Note: Make sure 'result' type isn't too strictly typed if it doesn't match the backend yet.
+      // You might need to cast it as 'any' for the transformation step if TypeScript complains.
+      const result: any = await analyticsService.getSummary(); 
+      console.log('Backend response:', result);
       
-      setData(result as any);
+      // Transform the backend response to match the DashboardData interface
+      const transformedData: DashboardData = {
+        totals: {
+          categories: result.summary?.total_categories || 0,
+          brands: result.summary?.total_brands || 0,
+          models: result.summary?.total_models || 0,
+          avg_price: result.summary?.average_price || 0,
+        },
+        charts: {
+          // Map the backend's 'model_count' to 'models' so the Recharts <Bar dataKey="models" /> works
+          models_per_category: result.models_by_category?.map((item: any) => ({
+            name: item.name,
+            models: item.model_count 
+          })) || [],
+          // Provide empty arrays as fallbacks since your backend log didn't include these
+          model_status: [], 
+          top_searches: []  
+        }
+      };
+      
+      setData(transformedData);
     } catch (error) {
       toast.error(extractErrorMessage(error));
     } finally {
