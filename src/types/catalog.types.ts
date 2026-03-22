@@ -1,9 +1,13 @@
 // types/catalog.types.ts
 
+// ============================================================================
+// CORE ENTITIES
+// ============================================================================
+
 export interface DeviceCategory {
   id: string;
   name: string;
-  title?: string; // Alias for name
+  title?: string;           // Alias returned by DeviceCategoryListSerializer
   slug: string;
   description: string;
   icon?: File | null;
@@ -26,6 +30,7 @@ export interface DeviceBrand {
   country_of_origin: string;
   website: string;
   is_active: boolean;
+  is_featured?: boolean;
   sort_order: number;
   models_count?: number;
   categories?: DeviceCategory[];
@@ -77,18 +82,18 @@ export interface DeviceModel {
 export interface DeviceAttribute {
   id: string;
   name: string;
-  attribute_type: 'cosmetic' | 'functional' | 'accessory' | 'specification' | 'warranty' | 'legal';
+  attribute_type: AttributeType;
   device_category: string;
   category_name?: string;
   question_text: string;
   is_required: boolean;
   is_boolean: boolean;
   options: string[];
-  price_impact: Record<string, {
-    type: 'percentage' | 'fixed';
-    value: number;
-  } | string>; // Can be rule key (string) or direct impact object
-  bucket?: 'screen' | 'body' | 'none';
+  price_impact: Record<
+    string,
+    { type: 'percentage' | 'fixed'; value: number } | string
+  >;
+  bucket?: BucketType;
   display_order: number;
   help_text: string;
   placeholder: string;
@@ -109,7 +114,7 @@ export interface DeviceVariant {
   is_available: boolean;
   stock_quantity: number;
   created_at: string;
-  updated_at: string;
+  updated_at?: string;
 }
 
 export interface PopularSearch {
@@ -119,6 +124,42 @@ export interface PopularSearch {
   last_searched_at: string;
   created_at: string;
 }
+
+// ============================================================================
+// ENUMS / UNION TYPES
+// ============================================================================
+
+export type AttributeType =
+  | 'cosmetic'
+  | 'functional'
+  | 'accessory'
+  | 'specification'
+  | 'warranty'
+  | 'legal';
+
+export type BucketType = 'screen' | 'body' | 'none';
+
+export type EntityType =
+  | 'categories'
+  | 'brands'
+  | 'models'
+  | 'variants'
+  | 'attributes';
+
+export type BulkImportType =
+  | 'categories'
+  | 'brands'
+  | 'models'
+  | 'attributes'
+  | 'variants';
+
+export type BooleanField = 'is_active' | 'is_featured' | 'is_available';
+
+export type VerificationStatus = 'pending' | 'in_review' | 'verified' | 'rejected';
+
+// ============================================================================
+// FILTER / QUERY OPTIONS
+// ============================================================================
 
 export interface FilterOptions {
   page?: number;
@@ -131,6 +172,7 @@ export interface FilterOptions {
   is_boolean?: boolean | string;
   is_required?: boolean | string;
   attribute_type?: string;
+  device_category?: string;
   price_min?: number;
   price_max?: number;
   launch_year?: number;
@@ -141,6 +183,10 @@ export interface FilterOptions {
   [key: string]: any;
 }
 
+// ============================================================================
+// PAGINATED RESPONSE
+// ============================================================================
+
 export interface PaginatedResponse<T> {
   count: number;
   next: string | null;
@@ -148,11 +194,51 @@ export interface PaginatedResponse<T> {
   results: T[];
 }
 
+export type CategoryListResponse  = PaginatedResponse<DeviceCategory>;
+export type BrandListResponse     = PaginatedResponse<DeviceBrand>;
+export type ModelListResponse     = PaginatedResponse<DeviceModel>;
+export type AttributeListResponse = PaginatedResponse<DeviceAttribute>;
+export type VariantListResponse   = PaginatedResponse<DeviceVariant>;
+export type SearchListResponse    = PaginatedResponse<PopularSearch>;
+
+// ============================================================================
+// BULK OPERATION RESULTS
+// ============================================================================
+
 export interface BulkImportResult {
   created: number;
   updated: number;
   errors: string[];
 }
+
+export interface BulkDeleteResult {
+  deleted: number;
+  failed: string[];
+  errors: string[];
+}
+
+export interface BulkUpdateResult {
+  updated: number;
+  failed: string[];
+  errors: string[];
+}
+
+export interface BulkImageUploadDetail {
+  filename: string;
+  model?: string;
+  status: 'uploaded' | 'skipped' | 'error';
+}
+
+export interface BulkImageUploadResult {
+  uploaded: number;
+  skipped: number;
+  errors: string[];
+  details: BulkImageUploadDetail[];
+}
+
+// ============================================================================
+// PRICE ESTIMATES
+// ============================================================================
 
 export interface PriceEstimateInput {
   model_id: string;
@@ -164,15 +250,17 @@ export interface PriceEstimateInput {
   purchase_date?: string;
 }
 
+export interface PriceDeduction {
+  attribute: string;
+  impact: number;
+  reason: string;
+}
+
 export interface PriceEstimate {
   estimate_id: string;
   device_model: DeviceModel;
   base_price: number;
-  deductions: Array<{
-    attribute: string;
-    impact: number;
-    reason: string;
-  }>;
+  deductions: PriceDeduction[];
   final_price: number;
   pricing_version: string;
   created_at: string;
@@ -180,24 +268,74 @@ export interface PriceEstimate {
   condition_deductions?: number;
 }
 
-// Analytics types
+// ============================================================================
+// ANALYTICS
+// ============================================================================
+
+export interface CatalogSummary {
+  total_categories: number;
+  total_brands: number;
+  total_models: number;
+  total_variants: number;
+  average_price: number;
+  featured_categories: number;
+  featured_brands: number;
+  featured_models: number;
+}
+
 export interface CatalogAnalytics {
+  summary: CatalogSummary;
+  models_by_category: Array<{ name: string; model_count: number }>;
+  models_by_brand: Array<{ name: string; model_count: number }>;
+}
+
+/** Transformed version used by CatalogBoard charts */
+export interface DashboardData {
   totals: {
     categories: number;
     brands: number;
     models: number;
-    variants: number;
     avg_price: number;
   };
   charts: {
     models_per_category: Array<{ name: string; models: number }>;
-    models_per_brand: Array<{ name: string; models: number }>;
     model_status: Array<{ name: string; value: number }>;
     top_searches: Array<{ term: string; count: number }>;
   };
+  trends?: {
+    new_models_this_month: number;
+    new_models_last_month: number;
+    active_categories: number;
+    active_brands: number;
+  };
 }
 
-// Form data types
+export interface ChartDataPoint {
+  name: string;
+  value: number;
+  [key: string]: any;
+}
+
+export interface SearchTrendData {
+  term: string;
+  count: number;
+  date?: string;
+}
+
+// ============================================================================
+// VARIANT STATUS HELPER
+// ============================================================================
+
+export interface VariantStatus {
+  status: 'available' | 'unavailable' | 'out_of_stock' | 'low_stock';
+  label: string;
+  color: string;
+}
+
+// ============================================================================
+// FORM DATA TYPES
+// ============================================================================
+
 export interface CategoryFormData {
   name: string;
   slug?: string;
@@ -240,14 +378,14 @@ export interface ModelFormData {
 
 export interface AttributeFormData {
   name: string;
-  attribute_type: string;
+  attribute_type: AttributeType;
   device_category: string;
   question_text: string;
   is_required: boolean;
   is_boolean: boolean;
   options: string[];
-  price_impact: Record<string, any>;
-  bucket?: string;
+  price_impact: Record<string, { type: 'percentage' | 'fixed'; value: number }>;
+  bucket?: BucketType;
   display_order: number;
   help_text?: string;
   placeholder?: string;
@@ -259,35 +397,15 @@ export interface VariantFormData {
   storage?: string;
   ram?: string;
   color?: string;
-  variant_price?: number;
+  variant_price?: number | null;
   sku?: string;
   is_available: boolean;
   stock_quantity: number;
 }
 
-// Utility types
-export interface VariantStatus {
-  status: 'available' | 'unavailable' | 'out_of_stock' | 'low_stock';
-  label: string;
-  color: string;
-}
 
-export interface ChartDataPoint {
-  name: string;
-  value: number;
-  [key: string]: any;
-}
 
-export interface SearchTrendData {
-  term: string;
-  count: number;
-  date?: string;
-}
 
-// API Response types
-export type CategoryListResponse = PaginatedResponse<DeviceCategory>;
-export type BrandListResponse = PaginatedResponse<DeviceBrand>;
-export type ModelListResponse = PaginatedResponse<DeviceModel>;
-export type AttributeListResponse = PaginatedResponse<DeviceAttribute>;
-export type VariantListResponse = PaginatedResponse<DeviceVariant>;
-export type SearchListResponse = PaginatedResponse<PopularSearch>;
+
+
+

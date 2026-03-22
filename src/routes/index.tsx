@@ -71,6 +71,10 @@ import BannerManagement from '../pages/communications/BannerManagement';
 // Pricing Pages
 import PricingRules from '../pages/Pricing/PricingRules';
 import PriceSimulator from '../pages/Pricing/PriceSimulator';
+import PricingAdmin from '../pages/Pricing/PricingAdmin';
+import AgentsList from '../pages/partneragents/AgentsList';
+import AgentDetail from '../pages/partneragents/AgentDetail';
+import AgentAnalytics from '../pages/partneragents/AgentAnalytics';
 
 export default function AppRoutes() {
   return (
@@ -119,6 +123,11 @@ export default function AppRoutes() {
         <Route path="/leads/:id" element={<LeadDetail />} />
         <Route path="/leads/:id/assign" element={<AssignPartner />} />
 
+        {/* // In your router: */}
+        <Route path="/agents" element={<AgentsList />} />
+        <Route path="/agents/:id" element={<AgentDetail />} />
+        <Route path="/agents/analytics" element={<AgentAnalytics />} />
+
         {/* Partners Routes */}
         <Route path="/partners" element={<PartnersList />} />
         <Route path="/partners/pending-approvals" element={<PendingApprovals />} />
@@ -155,6 +164,7 @@ export default function AppRoutes() {
         <Route path="/communications/banners" element={<BannerManagement />} />
 
         {/* Pricing Routes */}
+        <Route path="/pricing" element={<PricingAdmin />} />
         <Route path="/pricing/rules" element={<PricingRules />} />
         <Route path="/pricing/simulator" element={<PriceSimulator />} />
       </Route>

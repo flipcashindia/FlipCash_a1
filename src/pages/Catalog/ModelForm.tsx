@@ -298,6 +298,7 @@ export default function ModelForm() {
     try {
       const data = await catalogService.getCategories({ page_size: 999, is_active: true });
       setCategories(data.results);
+      console.log("categories data : ", data.results)
     } catch (error) {
       toast.error('Failed to load categories');
     }
@@ -451,7 +452,7 @@ export default function ModelForm() {
                   >
                     <option value="">Select a category</option>
                     {categories.map(cat => (
-                      <option key={cat.id} value={cat.id}>{cat.name}</option>
+                      <option key={cat.id} value={cat.id}>{cat.title}</option>
                     ))}
                   </Select>
 

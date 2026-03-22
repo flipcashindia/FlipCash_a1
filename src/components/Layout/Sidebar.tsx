@@ -25,7 +25,14 @@ import {
   TrendingUp,
   Clock,
   FileText,
-  CreditCard 
+  CreditCard,
+  PlusCircle,
+  Activity,
+  Bell,
+  HelpCircle,
+  Image as ImageIcon,
+  PlayCircle,
+  Briefcase // Added for Agents
 } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { usePermissions } from '../../hooks/usePermissions';
@@ -46,13 +53,12 @@ interface MenuItem {
   subItems?: SubMenuItem[];
 }
 
-// 👈 FIXED: Interface added and exported
 export interface SidebarProps {
   isOpen: boolean;
   setIsOpen: (val: boolean) => void;
 }
 
-export default function Sidebar({ isOpen }: SidebarProps) {
+export default function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
   const location = useLocation();
   const { user, clearAuth } = useAuthStore();
   const { canManageFinance, canManageOperations, canManageUsers, isAdmin } = usePermissions();
@@ -63,11 +69,14 @@ export default function Sidebar({ isOpen }: SidebarProps) {
     const path = location.pathname;
     const initialState: Record<string, boolean> = {};
     
-    if (path.startsWith(ROUTES.CATALOG)) initialState[ROUTES.CATALOG] = true;
-    if (path.startsWith(ROUTES.FINANCE)) initialState[ROUTES.FINANCE] = true;
+    // Check which group should be open on initial load
+    if (path.startsWith(ROUTES.CATALOG || '/catalog')) initialState[ROUTES.CATALOG || '/catalog'] = true;
+    if (path.startsWith(ROUTES.FINANCE || '/finance')) initialState[ROUTES.FINANCE || '/finance'] = true;
+    if (path.startsWith(ROUTES.PARTNERS || '/partners')) initialState[ROUTES.PARTNERS || '/partners'] = true;
+    if (path.startsWith('/agents')) initialState['/agents'] = true; // Added Agents logic
     if (path.startsWith('/operations')) initialState['/operations'] = true;
     if (path.startsWith('/communications')) initialState['/communications'] = true;
-    if (path.startsWith(ROUTES.PRICING)) initialState[ROUTES.PRICING] = true;
+    if (path.startsWith(ROUTES.PRICING || '/pricing')) initialState[ROUTES.PRICING || '/pricing'] = true;
     
     return initialState;
   });
@@ -82,52 +91,71 @@ export default function Sidebar({ isOpen }: SidebarProps) {
 
   const menuItems: MenuItem[] = [
     { 
-      path: ROUTES.DASHBOARD, 
+      path: ROUTES.DASHBOARD || '/dashboard', 
       icon: LayoutDashboard, 
       label: 'Dashboard',
       show: true 
     },
     { 
-      path: ROUTES.CATALOG, 
+      path: ROUTES.CATALOG || '/catalog', 
       icon: Package, 
       label: 'Catalog',
       show: true,
       subItems: [
         { path: '/catalog', label: 'Dashboard', icon: LayoutDashboard },
         { path: '/catalog/categories', label: 'Categories', icon: Grid3x3 },
+        { path: '/catalog/categories/new', label: 'Add Category', icon: PlusCircle },
         { path: '/catalog/brands', label: 'Brands', icon: Tag },
+        { path: '/catalog/brands/new', label: 'Add Brand', icon: PlusCircle },
         { path: '/catalog/models', label: 'Models', icon: Smartphone },
+        { path: '/catalog/models/new', label: 'Add Model', icon: PlusCircle },
         { path: '/catalog/attributes', label: 'Attributes', icon: ListChecks },
+        { path: '/catalog/attributes/new', label: 'Add Attribute', icon: PlusCircle },
         { path: '/catalog/bulk-import', label: 'Bulk Import', icon: Upload },
         { path: '/catalog/search-analytics', label: 'Search Analytics', icon: TrendingUp },
       ]
     },
     { 
-      path: ROUTES.LEADS, 
+      path: ROUTES.LEADS || '/leads', 
       icon: ShoppingBag, 
       label: 'Leads',
       show: true 
     },
     { 
-      path: ROUTES.PARTNERS, 
-      icon: UserCheck, 
-      label: 'Partners',
-      show: true 
+      path: '/agents', 
+      icon: Briefcase, 
+      label: 'Partner Agents',
+      show: true, // Adjust permissions here if needed (e.g., canManagePartners())
+      subItems: [
+        { path: '/agents', label: 'All Agents', icon: Users },
+        { path: '/agents/analytics', label: 'Analytics', icon: Activity },
+      ]
     },
     { 
-      path: ROUTES.VISITS, 
+      path: ROUTES.PARTNERS || '/partners', 
+      icon: UserCheck, 
+      label: 'Partners',
+      show: true,
+      subItems: [
+        { path: '/partners', label: 'All Partners', icon: Users },
+        { path: '/partners/pending-approvals', label: 'Pending Approvals', icon: Clock },
+        { path: '/partners/performance', label: 'Performance', icon: Activity },
+      ]
+    },
+    { 
+      path: ROUTES.VISITS || '/visits', 
       icon: MapPin, 
       label: 'Visits',
       show: true 
     },
     { 
-      path: ROUTES.USERS, 
+      path: ROUTES.USERS || '/users', 
       icon: Users, 
       label: 'Customers',
       show: canManageUsers() 
     },
     { 
-      path: ROUTES.FINANCE, 
+      path: ROUTES.FINANCE || '/finance', 
       icon: Wallet, 
       label: 'Finance',
       show: canManageFinance(),
@@ -147,8 +175,8 @@ export default function Sidebar({ isOpen }: SidebarProps) {
       label: 'Operations',
       show: canManageOperations(),
       subItems: [
-        { path: ROUTES.DISPUTES, label: 'Disputes' },
-        { path: ROUTES.TICKETS, label: 'Support Tickets' },
+        { path: '/operations/disputes', label: 'Disputes', icon: AlertCircle },
+        { path: '/operations/tickets', label: 'Support Tickets', icon: MessageSquare },
       ]
     },
     { 
@@ -157,19 +185,21 @@ export default function Sidebar({ isOpen }: SidebarProps) {
       label: 'Communications',
       show: isAdmin(),
       subItems: [
-        { path: '/communications/notifications', label: 'Notifications' },
-        { path: '/communications/faqs', label: 'FAQs' },
-        { path: '/communications/banners', label: 'Banners' },
+        { path: '/communications/notifications', label: 'Notifications', icon: Bell },
+        { path: '/communications/notifications/create', label: 'Create Notification', icon: PlusCircle },
+        { path: '/communications/faqs', label: 'FAQs', icon: HelpCircle },
+        { path: '/communications/banners', label: 'Banners', icon: ImageIcon },
       ]
     },
     { 
-      path: ROUTES.PRICING, 
+      path: ROUTES.PRICING || '/pricing', 
       icon: DollarSign, 
       label: 'Pricing',
       show: isAdmin(),
       subItems: [
-        { path: '/pricing/rules', label: 'Pricing Rules' },
-        { path: '/pricing/simulator', label: 'Price Simulator' },
+        { path: '/pricing', label: 'Dashboard', icon: LayoutDashboard },
+        { path: '/pricing/rules', label: 'Pricing Rules', icon: ListChecks },
+        { path: '/pricing/simulator', label: 'Price Simulator', icon: PlayCircle },
       ]
     },
   ];
@@ -247,9 +277,9 @@ export default function Sidebar({ isOpen }: SidebarProps) {
                       </button>
 
                       <div className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                        isExpanded ? 'max-h-[500px] opacity-100 mt-1' : 'max-h-0 opacity-0'
+                        isExpanded ? 'max-h-[800px] opacity-100 mt-1' : 'max-h-0 opacity-0'
                       }`}>
-                        <div className="ml-5 pl-3 border-l-2 border-gray-800 space-y-1">
+                        <div className="ml-5 pl-3 border-l-2 border-gray-800 space-y-1 py-1">
                           {item.subItems.map((subItem) => {
                             const isSubActive = isActive(subItem.path, true);
                             const SubIcon = subItem.icon;

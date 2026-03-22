@@ -34,7 +34,8 @@ export interface StatusFilterParams {
 
 const api = axios.create({
   // SET YOUR DJANGO BACKEND'S BASE URL HERE
-  baseURL: 'http://localhost:8000/api', // Or from your .env file
+
+  baseURL: 'http://localhost:8000/api/v1', // Or from your .env file
   headers: {
     'Content-Type': 'application/json',
   },
