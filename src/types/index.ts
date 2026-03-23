@@ -134,6 +134,7 @@ export interface DeviceCategory {
   name: string;
   slug: string;
   description?: string;
+  title?: string; // Fixed
   icon?: string;
   icon_url?: string; // Fixed
   is_active: boolean;
@@ -605,8 +606,8 @@ export interface PricingRule {
   device_model?: string;
   age_category: string;
   condition_grade: string;
-  base_price_percentage: string;
-  deduction_percentage: string;
+  base_price_percentage: number; 
+  deduction_percentage: number;
   is_active: boolean;
   effective_from: string;
   effective_until?: string;
