@@ -1,5 +1,6 @@
 // pages/dashboard/Dashboard.tsx
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   Users, ShoppingBag, TrendingUp, DollarSign, 
   UserCheck, AlertCircle, Ticket, Package 
@@ -14,6 +15,7 @@ import toast from 'react-hot-toast';
 export default function Dashboard() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     loadDashboardStats();
@@ -39,7 +41,7 @@ export default function Dashboard() {
         <h1 className="text-3xl font-bold text-dark">Dashboard</h1>
       </div>
 
-      {/* Stats Grid */}
+      {/* Primary Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard
           title="Total Leads"
@@ -47,6 +49,8 @@ export default function Dashboard() {
           icon={ShoppingBag}
           color="blue"
           subtitle={`${stats.leads_today} today`}
+          onClick={() => navigate('/leads')}
+          className="cursor-pointer hover:shadow-lg transition-shadow"
         />
         <StatCard
           title="Active Leads"
@@ -54,6 +58,8 @@ export default function Dashboard() {
           icon={TrendingUp}
           color="green"
           subtitle={`${stats.completed_leads} completed`}
+          onClick={() => navigate('/leads')}
+          className="cursor-pointer hover:shadow-lg transition-shadow"
         />
         <StatCard
           title="Total Partners"
@@ -61,6 +67,8 @@ export default function Dashboard() {
           icon={UserCheck}
           color="purple"
           subtitle={`${stats.active_partners} active`}
+          onClick={() => navigate('/partners')}
+          className="cursor-pointer hover:shadow-lg transition-shadow"
         />
         <StatCard
           title="Total Users"
@@ -68,28 +76,36 @@ export default function Dashboard() {
           icon={Users}
           color="yellow"
           subtitle={`${stats.new_users_today} new today`}
+          onClick={() => navigate('/users')}
+          className="cursor-pointer hover:shadow-lg transition-shadow"
         />
       </div>
 
-      {/* Secondary Stats */}
+      {/* Secondary Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard
           title="Pending Approvals"
           value={stats.pending_approval}
           icon={AlertCircle}
           color="orange"
+          onClick={() => navigate('/partners/pending-approvals')}
+          className="cursor-pointer hover:shadow-lg transition-shadow"
         />
         <StatCard
           title="Open Tickets"
           value={stats.open_tickets}
           icon={Ticket}
           color="red"
+          onClick={() => navigate('/operations/tickets')}
+          className="cursor-pointer hover:shadow-lg transition-shadow"
         />
         <StatCard
           title="Pending Disputes"
           value={stats.pending_disputes}
           icon={Package}
           color="pink"
+          onClick={() => navigate('/operations/disputes')}
+          className="cursor-pointer hover:shadow-lg transition-shadow"
         />
         <StatCard
           title="Revenue (Month)"
@@ -97,6 +113,8 @@ export default function Dashboard() {
           icon={DollarSign}
           color="green"
           subtitle={`₹${stats.revenue_today} today`}
+          onClick={() => navigate('/finance')}
+          className="cursor-pointer hover:shadow-lg transition-shadow"
         />
       </div>
 
