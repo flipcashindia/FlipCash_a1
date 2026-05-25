@@ -7,11 +7,9 @@ interface StatCardProps {
   icon: LucideIcon;
   color: 'blue' | 'green' | 'yellow' | 'red' | 'purple' | 'pink' | 'orange';
   subtitle?: string;
-  onClick?: () => void;
-  className?: string;
 }
 
-export function StatCard({ title, value, icon: Icon, color, subtitle, onClick, className }: StatCardProps) {
+export function StatCard({ title, value, icon: Icon, color, subtitle }: StatCardProps) {
   const colorClasses = {
     blue: 'bg-blue-100 text-blue-600',
     green: 'bg-green-100 text-green-600',
@@ -23,10 +21,7 @@ export function StatCard({ title, value, icon: Icon, color, subtitle, onClick, c
   };
 
   return (
-    <div
-      onClick={onClick}
-      className={`bg-white rounded-lg shadow-sm border border-gray-200 p-6 ${onClick ? 'cursor-pointer hover:shadow-md hover:border-gray-300 transition-all duration-200' : ''} ${className ?? ''}`}
-    >
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
       <div className="flex items-center justify-between">
         <div className="flex-1">
           <p className="text-sm font-medium text-gray-600">{title}</p>
