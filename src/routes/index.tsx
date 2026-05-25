@@ -60,6 +60,7 @@ import PartnerPayments from '../pages/Finance/PartnerPayments';
 import DisputesList from '../pages/Operations/DisputesList';
 import DisputeDetail from '../pages/Operations/DisputeDetail';
 import TicketsList from '../pages/Operations/TicketsList';
+import AccountDeletionRequests from '../pages/Operations/AccountDeletionRequests';
 import TicketDetail from '../pages/Operations/TicketDetail';
 
 // Communications Pages
@@ -156,6 +157,7 @@ export default function AppRoutes() {
         <Route path="/operations/disputes/:id" element={<DisputeDetail />} />
         <Route path="/operations/tickets" element={<TicketsList />} />
         <Route path="/operations/tickets/:id" element={<TicketDetail />} />
+        <Route path="/operations/account-deletions" element={<AccountDeletionRequests />} />
 
         {/* Communications Routes */}
         <Route path="/communications/notifications" element={<NotificationsList />} />

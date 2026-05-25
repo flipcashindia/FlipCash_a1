@@ -32,7 +32,8 @@ import {
   HelpCircle,
   Image as ImageIcon,
   PlayCircle,
-  Briefcase // Added for Agents
+  Briefcase, // Added for Agents
+  UserX, // Added for Account Deletions
 } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { usePermissions } from '../../hooks/usePermissions';
@@ -177,6 +178,7 @@ export default function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
       subItems: [
         { path: '/operations/disputes', label: 'Disputes', icon: AlertCircle },
         { path: '/operations/tickets', label: 'Support Tickets', icon: MessageSquare },
+        { path: '/operations/account-deletions', label: 'Account Deletions', icon: UserX },
       ]
     },
     { 
