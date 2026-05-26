@@ -60,6 +60,8 @@ interface BasicData {
 
     email: string;
 
+    kyc_status?: string;
+
     pickup_address: any;
 
     kyc_data?: {
@@ -714,7 +716,7 @@ export default function LeadDetail() {
 
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
 
-                          {partnerActivity.offers[0].inspection_photos.map((photo: string, idx: number) => (
+                          {partnerActivity?.offers?.[0]?.inspection_photos?.map((photo: string, idx: number) => (
 
                             <a href={photo} target="_blank" rel="noreferrer" key={idx} className="block group rounded-lg overflow-hidden border border-gray-200 hover:border-primary transition-colors">
 
@@ -1070,7 +1072,7 @@ export default function LeadDetail() {
 
                     {basic.customer.kyc_status === 'verified' && (
 
-                      <BadgeCheck className="text-blue-500" size={20} title="KYC Verified" />
+                      <span title="KYC Verified"><BadgeCheck className="text-blue-500" size={20} /></span>
 
                     )}
 
